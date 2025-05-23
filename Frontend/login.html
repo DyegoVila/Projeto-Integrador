@@ -563,15 +563,15 @@
 
         // Demo validation - in a real app, this would connect to a backend
         if (email && password) {
-          // Simulate a successful login
+          // Using fetch to send login data to the backend
           fetch("http://127.0.0.1:5000/login", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              usuario: "admin",
-              senha: "1234",
+              usuario: email,
+              senha: senha,
             }),
           })
             .then((response) => response.json())

@@ -19,12 +19,17 @@ def login():
     usuario = data.get('usuario')
     senha = data.get('senha')
 
+    conn = get_db_connection()
+    cursor = conn.execute('SELECT id, login FROM usuarios WHERE login = ? AND senha = ?', (usuario, senha))
+    user = cursor.fetchone()
+    conn.close()
+
     # Aqui você pode validar no banco ou deixar fixo como antes
-    if usuario == 'admin' and senha == '1234':
+    if user:
         session['usuario'] = usuario
-        return jsonify({"message": "Login efetuado com sucesso"}), 200
+        return jsonify({'status': 'sucesso', 'id': user['id'], 'username': user['username']}), 200
     else:
-        return jsonify({"error": "Credenciais inválidas"}), 401
+        return jsonify({'status': 'erro', 'mensagem': 'Usuário ou senha inválidos'}), 401
 
 # Cadastro: recebe JSON { "username": "...", "password": "..." }
 @app.route('/cadastro', methods=['POST'])
