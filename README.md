@@ -13,9 +13,11 @@ Este projeto é um sistema web desenvolvido como parte de um Projeto Integrador 
 Projeto-Integrador/
 ├── Frontend/
 │   └── templates/
+│       ├── home.html
 │       ├── login.html
-│       ├── cadastro.html
-│       └── dashboard.html
+|       ├── dashboard
+│       └── cadastro.html
+|        
 │
 ├── Backend/
 │   ├── app.py
@@ -69,7 +71,7 @@ Os arquivos HTML estão localizados na pasta `Frontend/templates`. Eles podem se
 
 ## 📡 API - Endpoints Disponíveis
 
-- `POST /login-api`  
+- `POST /login`  
   Autentica o usuário.
 
 - `POST /cadastro`  
