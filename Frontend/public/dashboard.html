@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard de Eventos</title>
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
+  <body>
+    <!-- Menu lateral -->
+    <nav class="sidenav" id="sidenav">
+      <div class="sidenav-header">
+        <a href="#" class="logo">
+          <div class="logo-icon">E</div>
+          <span class="logo-text">EventPro</span>
+        </a>
+        <button class="nav-toggle" id="nav-toggle">≡</button>
+      </div>
+
+      <ul class="menu-list">
+        <li class="menu-item">
+          <a href="home.html" class="menu-link">
+            <span class="menu-icon">🏠</span>
+            <span class="menu-text">Home</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="#" class="menu-link active">
+            <span class="menu-icon">📊</span>
+            <span class="menu-text">Dashboard</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="#" class="menu-link disabled">
+            <span class="menu-icon">📅</span>
+            <span class="menu-text">Eventos</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="#" class="menu-link disabled">
+            <span class="menu-icon">👥</span>
+            <span class="menu-text">Participantes</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="#" class="menu-link disabled">
+            <span class="menu-icon">🏢</span>
+            <span class="menu-text">Perfil da Empresa</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="#" class="menu-link disabled">
+            <span class="menu-icon">⚙️</span>
+            <span class="menu-text">Configurações</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="user-profile" id="user-profile">
+        <div class="profile-avatar">JP</div>
+        <div class="profile-info">
+          <div id="profile-name" class="profile-name">User</div>
+          <div id="profile-role" class="profile-role">Role</div>
+        </div>
+        <span class="profile-toggle">▼</span>
+
+        <div class="profile-dropdown" id="profile-dropdown">
+          <a href="#" class="dropdown-item">
+            <span class="dropdown-icon">👤</span>
+            Meu Perfil
+          </a>
+          <a href="home.html" id="logout" class="dropdown-item">
+            <span class="dropdown-icon">🚪</span>
+            Sair do Sistema
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Botão toggle para mobile -->
+    <button class="mobile-nav-toggle" id="mobile-nav-toggle">≡</button>
+
+    <!-- Conteúdo principal -->
+    <div class="main-content">
+      <div class="container">
+        <header>
+          <h1>Dashboard de Eventos</h1>
+          <button id="btn-novo-evento" class="btn">
+            <span class="btn-icon">+</span>
+            Novo Evento
+          </button>
+        </header>
+
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-title">Total de Eventos</div>
+            <div class="card-value">24</div>
+            <div class="card-info positive">↑ 12% desde o mês passado</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Taxa de Participação</div>
+            <div class="card-value">85%</div>
+            <div class="card-info positive">↑ 5% desde o mês passado</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Eventos Pendentes</div>
+            <div class="card-value">7</div>
+            <div class="card-info negative">↑ 2 desde a semana passada</div>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-card">
+            <div class="chart-title">Eventos por Mês</div>
+            <canvas id="eventos-por-mes" class="chart"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Distribuição por Categoria</div>
+            <canvas id="categorias-chart" class="donut-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="eventos-table-container">
+          <div class="chart-title">Eventos Recentes</div>
+          <table class="eventos-table">
+            <thead>
+              <tr>
+                <th>Nome do Evento</th>
+                <th>Categoria</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <!-- <tbody>
+              <tr>
+                <td>Conferência Anual</td>
+                <td><span class="categoria corporativo">Corporativo</span></td>
+                <td>02/05/2025</td>
+                <td><span class="status pendente">Pendente</span></td>
+              </tr>
+              <tr>
+                <td>Workshop de Inovação</td>
+                <td><span class="categoria educacional">Educacional</span></td>
+                <td>25/04/2025</td>
+                <td><span class="status realizado">Realizado</span></td>
+              </tr>
+              <tr>
+                <td>Exposição Cultural</td>
+                <td><span class="categoria cultural">Cultural</span></td>
+                <td>18/04/2025</td>
+                <td><span class="status realizado">Realizado</span></td>
+              </tr>
+              <tr>
+                <td>Seminário Tecnológico</td>
+                <td><span class="categoria educacional">Educacional</span></td>
+                <td>10/04/2025</td>
+                <td><span class="status realizado">Realizado</span></td>
+              </tr>
+              <tr>
+                <td>Festival de Música</td>
+                <td><span class="categoria cultural">Cultural</span></td>
+                <td>05/04/2025</td>
+                <td><span class="status cancelado">Cancelado</span></td>
+              </tr>
+            </tbody> -->
+            <tbody id="eventosBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="modal-overlay" class="modal-overlay">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Novo Evento</h3>
+            <button class="modal-close">&times;</button>
+          </div>
+          <div class="modal-body">
+            <form id="form-novo-evento">
+              <div class="form-group">
+                <label class="form-label" for="nome-evento"
+                  >Nome do Evento</label
+                >
+                <input
+                  type="text"
+                  id="nome-evento"
+                  class="form-input"
+                  placeholder="Digite o nome do evento"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="categoria-evento"
+                  >Categoria</label
+                >
+                <select id="categoria-evento" class="form-select" required>
+                  <option value="">Selecione uma categoria</option>
+                  <option value="corporativo">Corporativo</option>
+                  <option value="cultural">Cultural</option>
+                  <option value="educacional">Educacional</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="data-evento">Data</label>
+                <input
+                  type="date"
+                  id="data-evento"
+                  class="form-input"
+                  required
+                />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button id="btn-cancelar" class="btn btn-cancelar">Cancelar</button>
+            <button id="btn-criar" class="btn btn-criar">Criar Evento</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
+    <script src="dashboard.js"></script>
+  </body>
+</html>

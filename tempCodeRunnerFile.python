@@ -1,0 +1,5 @@
+nome = input('Cadastre o nome do usuário: ')
+senha = input('Cadastre a senha: ')
+while senha == nome:
+    senha = input('Cadastre uma senha diferente:')
+print('Informações validadas com sucesso!')
