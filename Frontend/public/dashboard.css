@@ -577,11 +577,6 @@ h1 {
   gap: 10px;
 }
 
-.btn-cancelar {
-  background-color: #e0e0e0;
-  color: var(--cor-texto);
-}
-
 .btn-cancelar:hover {
   background-color: #d0d0d0;
 }
@@ -620,10 +615,15 @@ h1 {
   background-color: transparent;
   color: var(--cor-destaque);
   border: 1px solid var(--cor-destaque);
-  margin-top: 1rem;
 }
 
 .btn-secondary:hover {
-  background-color: rgba(52, 152, 219, 0.1);
-  transform: translateY(-2px);
+  color: white;
+  background-color: var(--cor-destaque);
+}
+
+.acoes {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }

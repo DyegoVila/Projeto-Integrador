@@ -63,6 +63,54 @@ def users():
     resultado = [dict(usuario) for usuario in usuarios]
     return jsonify(resultado)
 
+from flask import request, jsonify
+from sqlite3 import Error
+
+@app.route('/eventos', methods=['POST'])
+def novo_evento():
+    try:
+        data = request.get_json()
+        if not data or 'evento' not in data:
+            return jsonify({"erro": "Dados do evento ausentes ou mal formatados."}), 400
+        evento = data['evento']
+        nome = evento.get('nome')
+        categoria = evento.get('categoria')
+        data_evento = evento.get('data')
+        status = evento.get('status')
+        if not all([nome, categoria, data_evento, status]):
+            return jsonify({"erro": "Todos os campos do evento são obrigatórios."}), 400
+        conn = get_db_connection()
+        conn.execute(
+            'INSERT INTO eventos (nome, categoria, data, status) VALUES (?, ?, ?, ?)',
+            (nome, categoria, data_evento, status)
+        )
+        conn.commit()
+        conn.close()
+        return jsonify({"mensagem": "Evento criado com sucesso!"}), 201
+    except Error as e:
+        return jsonify({"erro": f"Erro no banco de dados: {str(e)}"}), 500
+    except Exception as e:
+        return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
+
+
+@app.route('/eventos', methods=['DELETE'])
+def deletar_evento():
+    try:
+        data = request.get_json()
+        if not data or 'id' not in data:
+            return jsonify({"erro": "ID do evento ausente ou mal formatado."}), 400
+        evento_id = data['id']
+        conn = get_db_connection()
+        cursor = conn.execute('DELETE FROM eventos WHERE id = ?', (evento_id,))
+        if cursor.rowcount == 0:
+            return jsonify({"erro": "Evento não encontrado."}), 404
+        conn.commit()
+        conn.close()
+        return jsonify({"mensagem": "Evento deletado com sucesso!"}), 200
+    except Error as e:
+        return jsonify({"erro": f"Erro no banco de dados: {str(e)}"}), 500
+    except Exception as e:
+        return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
 
 @app.route('/eventos', methods=['GET'])
 def eventos():
