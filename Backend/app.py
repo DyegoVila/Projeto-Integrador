@@ -93,15 +93,11 @@ def novo_evento():
         return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
 
 
-@app.route('/eventos', methods=['DELETE'])
-def deletar_evento():
+@app.route('/eventos/<int:id>', methods=['DELETE'])
+def deletar_evento(id):
     try:
-        data = request.get_json()
-        if not data or 'id' not in data:
-            return jsonify({"erro": "ID do evento ausente ou mal formatado."}), 400
-        evento_id = data['id']
         conn = get_db_connection()
-        cursor = conn.execute('DELETE FROM eventos WHERE id = ?', (evento_id,))
+        cursor = conn.execute('DELETE FROM eventos WHERE id = ?', (id,))
         if cursor.rowcount == 0:
             return jsonify({"erro": "Evento não encontrado."}), 404
         conn.commit()
