@@ -92,6 +92,34 @@ def novo_evento():
     except Exception as e:
         return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
 
+@app.route('/eventos/<int:evento_id>', methods=['UPDATE'])
+def atualizar_evento(evento_id):
+    try:
+        data = request.get_json()
+        if not data or 'evento' not in data:
+            return jsonify({"erro": "Dados do evento ausentes ou mal formatados."}), 400
+        evento = data['evento']
+        nome = evento.get('nome')
+        categoria = evento.get('categoria')
+        data_evento = evento.get('data')
+        status = evento.get('status')
+        if not all([nome, categoria, data_evento, status]):
+            return jsonify({"erro": "Todos os campos do evento são obrigatórios."}), 400
+        conn = get_db_connection()
+        cursor = conn.execute(
+            'UPDATE eventos SET nome = ?, categoria = ?, data = ?, status = ? WHERE id = ?',
+            (nome, categoria, data_evento, status, evento_id)
+        )
+        if cursor.rowcount == 0:
+            return jsonify({"erro": "Evento não encontrado."}), 404
+        conn.commit()
+        conn.close()
+        return jsonify({"mensagem": "Evento atualizado com sucesso!"}), 200
+    except Error as e:
+        return jsonify({"erro": f"Erro no banco de dados: {str(e)}"}), 500
+    except Exception as e:
+        return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
+
 
 @app.route('/eventos', methods=['DELETE'])
 def deletar_evento():

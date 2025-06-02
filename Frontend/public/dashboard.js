@@ -24,7 +24,7 @@ async function carregarEventos() {
         evento.status
       )}</span></td>
         <td class="acoes">
-          <button class="btn btn-editar" data-id="${
+          <button  class="btn btn-editar" data-id="${
             evento.id
           }">📝 Editar</button>
           <button class="btn btn-secondary btn-excluir" data-id="${
@@ -39,30 +39,51 @@ async function carregarEventos() {
   }
 }
 
+async function finalizarEdicao(event) {
+  const id = event.target.dataset.id; // ou event.target.getAttribute("data-id")
+  // Executa a ação de exclusão
+
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/eventos${id}`, {
+      method: "UPDATE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id }),
+    });
+    if (response.ok) {
+      console.log("Evento editado com sucesso");
+      await carregarEventos(); // Só chama após UPDATE bem-sucedido
+    } else {
+      console.error("Erro ao editar evento:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Erro:", error);
+  }
+}
+
+//Editar eventos
 document.addEventListener("click", async function (event) {
-  if (event.target && event.target.classList.contains("btn-excluir")) {
+  if (event.target && event.target.classList.contains("btn-editar")) {
     const id = event.target.dataset.id; // ou event.target.getAttribute("data-id")
-    console.log("ID do evento a excluir:", id);
-    const confirmado = confirm("Tem certeza que deseja excluir este evento?");
-    if (confirmado) {
-      // Executa a ação de exclusão
-      try {
-        const response = await fetch("http://127.0.0.1:5000/eventos", {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id }),
-        });
-        if (response.ok) {
-          console.log("Evento excluído com sucesso");
-          await carregarEventos(); // Só chama após DELETE bem-sucedido
-        } else {
-          console.error("Erro ao excluir evento:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Erro:", error);
+    // Executa a ação de exclusão
+
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/eventos${id}`, {
+        method: "UPDATE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+      if (response.ok) {
+        console.log("Evento editado com sucesso");
+        await carregarEventos(); // Só chama após UPDATE bem-sucedido
+      } else {
+        console.error("Erro ao editar evento:", response.statusText);
       }
+    } catch (error) {
+      console.error("Erro:", error);
     }
   }
 });
@@ -223,6 +244,10 @@ function configurarGraficos() {
       },
     },
   });
+}
+
+function editarEventos() {
+  modalOverlay.classList.add("active");
 }
 
 // Inicialização geral
