@@ -1,11 +1,15 @@
-from flask import Flask, request,  session, jsonify
+from flask import Flask, request, session, jsonify
 import sqlite3
 from flask_cors import CORS
 import base64
+from flasgger import Swagger
 
 app = Flask(__name__)
 app.secret_key = 'chave-secreta'
-CORS(app, supports_credentials=True)  # Libera CORS para todas as rotas e origens
+CORS(app, supports_credentials=True)
+
+# Swagger configurado com base no arquivo YAML
+swagger = Swagger(app, template_file='swagger.yaml')
 
 
 def get_db_connection():
@@ -13,30 +17,29 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn 
 
-# Login: recebe JSON { "usuario": "...", "senha": "..." }
+
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     email = data.get('email')
     senha = data.get('senha').encode("utf-8")
-
     senhaBase64 = base64.b64encode(senha).decode("utf-8")
 
     conn = get_db_connection()
-    cursor = conn.execute('SELECT id, nome, login, cargo FROM usuarios WHERE login = ? AND senha = ?', (email, senhaBase64))
+    cursor = conn.execute(
+        'SELECT id, nome, login, cargo FROM usuarios WHERE login = ? AND senha = ?',
+        (email, senhaBase64)
+    )
     user = cursor.fetchone()
     conn.close()
 
-
-
-    # Aqui você pode validar no banco ou deixar fixo como antes
     if user:
         session['login'] = email
-        return jsonify({'status': True, 'usuario': user['nome'], 'cargo': user['cargo'] }), 200
+        return jsonify({'status': True, 'usuario': user['nome'], 'cargo': user['cargo']}), 200
     else:
         return jsonify({'status': False, 'mensagem': 'Usuário ou senha inválidos'}), 401
 
-# Cadastro: recebe JSON { "username": "...", "password": "..." }
+
 @app.route('/cadastro', methods=['POST'])
 def cadastro():
     data = request.json
@@ -46,7 +49,10 @@ def cadastro():
 
     conn = get_db_connection()
     try:
-        conn.execute('INSERT INTO usuarios (nome, login, senha) VALUES (?, ?, ?)', (nome, login, senha))
+        conn.execute(
+            'INSERT INTO usuarios (nome, login, senha) VALUES (?, ?, ?)',
+            (nome, login, senha)
+        )
         conn.commit()
         return jsonify({"message": "Usuário cadastrado com sucesso!"}), 201
     except sqlite3.IntegrityError:
@@ -54,7 +60,7 @@ def cadastro():
     finally:
         conn.close()
 
-# Lista usuários
+
 @app.route('/users', methods=['GET'])
 def users():
     conn = get_db_connection()
@@ -63,7 +69,7 @@ def users():
     resultado = [dict(usuario) for usuario in usuarios]
     return jsonify(resultado)
 
-from flask import request, jsonify
+
 from sqlite3 import Error
 
 @app.route('/eventos', methods=['POST'])
@@ -77,8 +83,10 @@ def novo_evento():
         categoria = evento.get('categoria')
         data_evento = evento.get('data')
         status = evento.get('status')
+
         if not all([nome, categoria, data_evento, status]):
             return jsonify({"erro": "Todos os campos do evento são obrigatórios."}), 400
+
         conn = get_db_connection()
         conn.execute(
             'INSERT INTO eventos (nome, categoria, data, status) VALUES (?, ?, ?, ?)',
@@ -140,6 +148,7 @@ def deletar_evento():
     except Exception as e:
         return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
 
+
 @app.route('/eventos', methods=['GET'])
 def eventos():
     conn = get_db_connection()
@@ -149,7 +158,6 @@ def eventos():
     return jsonify(resultado)
 
 
-# Logout
 @app.route('/logout', methods=['POST'])
 def logout():
     session.pop('usuario', None)
