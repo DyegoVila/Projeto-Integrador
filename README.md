@@ -13,11 +13,11 @@ Este projeto é um sistema web desenvolvido como parte de um Projeto Integrador 
 Projeto-Integrador/
 ├── Frontend/
 │   └── templates/
-│       ├── home.html
+│       ├── index.html
 │       ├── login.html
 |       ├── dashboard
 │       └── cadastro.html
-|        
+|
 │
 ├── Backend/
 │   ├── app.py
@@ -87,10 +87,10 @@ Os arquivos HTML estão localizados na pasta `Frontend/templates`. Eles podem se
 
 ## 🛠 Tecnologias Utilizadas
 
-- Python 3.x  
-- Flask  
-- SQLite  
-- HTML5  
+- Python 3.x
+- Flask
+- SQLite
+- HTML5
 - Bootstrap (opcional no frontend)
 
 ---
@@ -117,7 +117,7 @@ CORS(app)
 
 ## 🤝 Contribuição
 
-Sinta-se à vontade para abrir *issues* ou enviar *pull requests*. Sugestões são sempre bem-vindas!
+Sinta-se à vontade para abrir _issues_ ou enviar _pull requests_. Sugestões são sempre bem-vindas!
 
 ---
 
