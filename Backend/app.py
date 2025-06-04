@@ -100,7 +100,7 @@ def novo_evento():
     except Exception as e:
         return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
 
-@app.route('/eventos/<int:evento_id>', methods=['UPDATE'])
+@app.route('/eventos/<int:evento_id>', methods=['PUT'])
 def atualizar_evento(evento_id):
     try:
         data = request.get_json()
@@ -129,13 +129,11 @@ def atualizar_evento(evento_id):
         return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
 
 
-@app.route('/eventos', methods=['DELETE'])
-def deletar_evento():
+@app.route('/eventos/<int:evento_id>', methods=['DELETE'])
+def deletar_evento(evento_id):
     try:
-        data = request.get_json()
-        if not data or 'id' not in data:
+        if not evento_id:
             return jsonify({"erro": "ID do evento ausente ou mal formatado."}), 400
-        evento_id = data['id']
         conn = get_db_connection()
         cursor = conn.execute('DELETE FROM eventos WHERE id = ?', (evento_id,))
         if cursor.rowcount == 0:

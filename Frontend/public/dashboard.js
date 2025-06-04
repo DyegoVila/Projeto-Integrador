@@ -24,14 +24,18 @@ async function carregarEventos() {
         evento.status
       )}</span></td>
         <td class="acoes">
-          <button  class="btn btn-editar" data-id="${
+          <button class="btn btn-editar" data-id="${
             evento.id
           }">📝 Editar</button>
           <button class="btn btn-secondary btn-excluir" data-id="${
             evento.id
           }">🗑️ Excluir</button>
-        </td>
-      `;
+        </td>`;
+      const btnEditar = tr.querySelector(".btn-editar");
+      const btnExcluir = tr.querySelector(".btn-excluir");
+      btnEditar.addEventListener("click", () => editarEventos(evento));
+      btnExcluir.addEventListener("click", () => excluirEvento(evento.id));
+
       eventosBody.appendChild(tr);
     });
   } catch (error) {
@@ -39,54 +43,40 @@ async function carregarEventos() {
   }
 }
 
-async function finalizarEdicao(event) {
-  const id = event.target.dataset.id; // ou event.target.getAttribute("data-id")
-  // Executa a ação de exclusão
+async function excluirEvento(id) {
+  if (!confirm("Tem certeza que deseja excluir este evento?")) return;
 
   try {
-    const response = await fetch(`http://127.0.0.1:5000/eventos${id}`, {
-      method: "UPDATE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id }),
+    const response = await fetch(`http://127.0.0.1:5000/eventos/${id}`, {
+      method: "DELETE",
     });
+
     if (response.ok) {
-      console.log("Evento editado com sucesso");
-      await carregarEventos(); // Só chama após UPDATE bem-sucedido
+      alert("Evento excluído com sucesso.");
+      carregarEventos();
     } else {
-      console.error("Erro ao editar evento:", response.statusText);
+      console.error("Erro ao excluir evento:", await response.text());
     }
   } catch (error) {
     console.error("Erro:", error);
   }
 }
 
-//Editar eventos
-document.addEventListener("click", async function (event) {
-  if (event.target && event.target.classList.contains("btn-editar")) {
-    const id = event.target.dataset.id; // ou event.target.getAttribute("data-id")
-    // Executa a ação de exclusão
+function fecharModal() {
+  const modalOverlay = document.getElementById("modal-overlay");
+  modalOverlay.classList.remove("active");
+  // Limpa os campos do formulário
+  document.getElementById("nome-evento").value = "";
+  document.getElementById("categoria-evento").value = "";
+  document.getElementById("data-evento").value = "";
 
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/eventos${id}`, {
-        method: "UPDATE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id }),
-      });
-      if (response.ok) {
-        console.log("Evento editado com sucesso");
-        await carregarEventos(); // Só chama após UPDATE bem-sucedido
-      } else {
-        console.error("Erro ao editar evento:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Erro:", error);
-    }
-  }
-});
+  // Restaura o título e texto do botão, se quiser
+  document.getElementById("modal-title").innerText = "Novo Evento";
+  document.getElementById("btn-criar").innerText = "Criar Evento";
+
+  // Remove qualquer função pendente no botão para evitar sobrescrita
+  document.getElementById("btn-criar").onclick = criarNovoEvento;
+}
 
 // Modal de Novo Evento
 function configurarModalNovoEvento() {
@@ -95,12 +85,9 @@ function configurarModalNovoEvento() {
   const modalClose = document.querySelector(".modal-close");
   const btnCancelar = document.getElementById("btn-cancelar");
   const btnCriar = document.getElementById("btn-criar");
-  const formNovoEvento = document.getElementById("form-novo-evento");
-
-  function fecharModal() {
-    modalOverlay.classList.remove("active");
-    formNovoEvento.reset();
-  }
+  const btnEditar = document.getElementById("btn-editar");
+  btnCriar.style.display = "block";
+  btnEditar.style.display = "none";
 
   btnNovoEvento.addEventListener("click", () =>
     modalOverlay.classList.add("active")
@@ -128,9 +115,8 @@ function configurarModalNovoEvento() {
         });
 
         const data = await response.json();
-        console.log("Sucesso:", data);
-        carregarEventos(); // Atualiza lista após inserção
         fecharModal();
+        carregarEventos(); // Atualiza lista após inserção
       } catch (error) {
         console.error("Erro:", error);
       }
@@ -246,10 +232,51 @@ function configurarGraficos() {
   });
 }
 
-function editarEventos() {
+function editarEventos(evento) {
+  const modalOverlay = document.getElementById("modal-overlay");
+  const btnCriar = document.getElementById("btn-criar");
+  const btnEditar = document.getElementById("btn-editar");
+  btnCriar.style.display = "none";
+  btnEditar.style.display = "block";
+
   modalOverlay.classList.add("active");
+  console.log(evento);
+  document.getElementById("nome-evento").value = evento.nome;
+  document.getElementById("modal-title").innerText = "Editar Evento";
+  document.getElementById("categoria-evento").value = evento.categoria;
+  document.getElementById("data-evento").value = evento.data;
+  document.getElementById("btn-criar").innerText = "Atualizar Evento";
+
+  btnEditar.onclick = () =>
+    finalizarEdição({
+      id: evento.id,
+      nome: document.getElementById("nome-evento").value,
+      categoria: document.getElementById("categoria-evento").value,
+      data: document.getElementById("data-evento").value,
+      status: evento.status, // Preserva o status original
+    });
 }
 
+async function finalizarEdição(evento) {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/eventos/${evento.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ evento }),
+    });
+    if (response.ok) {
+      console.log("Evento editado com sucesso");
+      await carregarEventos(); // Só chama após UPDATE bem-sucedido
+      fecharModal();
+    } else {
+      console.error("Erro ao editar evento:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Erro:", error);
+  }
+}
 // Inicialização geral
 document.addEventListener("DOMContentLoaded", function () {
   configurarMenu();
