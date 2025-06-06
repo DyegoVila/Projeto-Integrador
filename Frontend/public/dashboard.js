@@ -9,7 +9,9 @@ async function carregarEventos() {
   eventosBody.innerHTML = "";
 
   try {
-    const response = await fetch("http://127.0.0.1:5000/eventos");
+    const response = await fetch(
+      "https://backend-pi-u4cx.onrender.com/eventos"
+    );
     const eventos = await response.json();
 
     eventos.forEach((evento) => {
@@ -47,9 +49,12 @@ async function excluirEvento(id) {
   if (!confirm("Tem certeza que deseja excluir este evento?")) return;
 
   try {
-    const response = await fetch(`http://127.0.0.1:5000/eventos/${id}`, {
-      method: "DELETE",
-    });
+    const response = await fetch(
+      `https://backend-pi-u4cx.onrender.com/eventos/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
 
     if (response.ok) {
       alert("Evento excluído com sucesso.");
@@ -108,11 +113,14 @@ function configurarModalNovoEvento() {
       const evento = { nome, categoria, data, status: "pendente" };
 
       try {
-        const response = await fetch("http://127.0.0.1:5000/eventos", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ evento }),
-        });
+        const response = await fetch(
+          "https://backend-pi-u4cx.onrender.com/eventos",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ evento }),
+          }
+        );
 
         const data = await response.json();
         fecharModal();
@@ -259,13 +267,16 @@ function editarEventos(evento) {
 
 async function finalizarEdição(evento) {
   try {
-    const response = await fetch(`http://127.0.0.1:5000/eventos/${evento.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ evento }),
-    });
+    const response = await fetch(
+      `https://backend-pi-u4cx.onrender.com/eventos/${evento.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ evento }),
+      }
+    );
     if (response.ok) {
       console.log("Evento editado com sucesso");
       await carregarEventos(); // Só chama após UPDATE bem-sucedido
